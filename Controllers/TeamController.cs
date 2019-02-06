@@ -7,12 +7,19 @@ using System.IO;
 using TeamMngtWS.MemoryCache;
 using System.Text;
 using TeamMngtWS.Model;
+using TeamMngtWS.Log;
 
 namespace TeamMngtWS.Controllers
 {
     [Route("/[controller]")]
-    public class TeamController : Controller
+    public class TeamController : BaseController
     {
+        public TeamController(ILogger logger):base(logger)
+        {
+        }
+
+        //public TeamController() : base(null) { }
+
         [HttpGet]
         public IActionResult Get(string name)
         {
@@ -21,6 +28,8 @@ namespace TeamMngtWS.Controllers
                 // add new team or update an existing team 
                 CacheItem<Team> itemTeam = (MemRepository<Team>.Repository.ContainsKey(name) == true) ? MemRepository<Team>.Repository[name] : null;
                 string response = (itemTeam != null) ? (itemTeam.Value.ToJSON()) : $"Team '{name}' was not found";
+
+                Log("received GET call from");
 
                 return Json(new Response
                 {
@@ -45,6 +54,8 @@ namespace TeamMngtWS.Controllers
         public IActionResult ShowCache()
         {
             string content = TeamModel.PrintCache();
+
+            Log("call ShowCache method");
             //content.Append("]");
             var response = new
             {
@@ -80,7 +91,9 @@ namespace TeamMngtWS.Controllers
             }
 
             TeamModel.AddMemberToTeam(team, name);
-            
+
+            Log($"add member {team} into team {name}");
+
             return Json(new Response
             {
                 output = $"Total teams' members: {MemRepository<Team>.Repository.Values.Count}",

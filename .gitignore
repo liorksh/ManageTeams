@@ -1,0 +1,11 @@
+**/.vs
+**/bin
+**/obj
+**/*.csproj.user
+/**packages**/**out**/
+
+# User-specific files
+*.yml
+.md
+*.pdf
+*.cmd

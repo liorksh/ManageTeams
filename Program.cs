@@ -3,6 +3,8 @@ using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using TeamMngtWS.Log;
 
 namespace AspNetCoreWebService
 {
@@ -24,18 +26,36 @@ namespace AspNetCoreWebService
 
             // the URL can be *, not necessarily localhost. It allows flexibility in deploying it in any platform/host.
             url = String.IsNullOrEmpty(url) ? $"http://*:{port}/" : url;
-            
+
+            // initialize the applicative logger
+            ILogger logger = InitializeLogger(config);
+
+            // initialize the web host
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
+                .ConfigureServices(log=>
+                    log.AddSingleton<ILogger>(logger)) // set the applicative logger
+                .ConfigureServices(collection=> 
+                    collection.AddSingleton<IConfiguration>(config)) // send the command line arguments to Startup instance
                 .UseStartup<Startup>()
                 .UseUrls(url)
-                .Build();            
+                .Build();
+
+             Console.WriteLine($"Host is up and running in URL: {url}");
 
             host.Run();
+        }
 
-            Console.WriteLine($"Host is up and running in URL: {url}");
+        private static ILogger InitializeLogger(IConfiguration config)
+        {
+            string logPath = config.GetValue<string>("logpath", Environment.CurrentDirectory);
+            string logName = config.GetValue<string>("logfilename", "log.log");
+            ILogger logger = new FileLogger();
+            logger.Init(logPath, logName);
+
+            return logger;
         }
     }
 }
