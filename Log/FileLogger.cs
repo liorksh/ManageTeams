@@ -9,6 +9,8 @@ namespace TeamMngtWS.Log
 {
     public class FileLogger:Logger
     {
+        public const string DELETE_LOGS_ARG = "deleteOldLog";
+
         public string LogPath { get; private set; }
         public string LogFile { get; private set; }
 
@@ -48,9 +50,9 @@ namespace TeamMngtWS.Log
             string toDelete=string.Empty;
 
             if (File.Exists(logFilePath) &&
-                (ArgumentExists("deleteOldLog", ref toDelete, parameters)))
+                (ArgumentExists(DELETE_LOGS_ARG, ref toDelete, parameters)))
             {
-                if (toDelete == "deleteOldLog")
+                if (toDelete == DELETE_LOGS_ARG)
                 {
                     File.Delete(logFilePath);
                 }
@@ -73,7 +75,9 @@ namespace TeamMngtWS.Log
             LogMessage(message);
         }
 
-
+        /// <summary>
+        /// Returns log messages
+        /// </summary>
         public override string Read(int numOfMessages)
         {
             StringBuilder logMessages = new StringBuilder();
@@ -88,6 +92,10 @@ namespace TeamMngtWS.Log
 
             return logMessages.ToString();
         }
+
+        /// <summary>
+        /// Adds a log message to the log file
+        /// </summary>
         private void LogMessage(string message)
         {
             File.AppendAllText(logFilePath, $"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss:FFF")}: {message}{Environment.NewLine}");

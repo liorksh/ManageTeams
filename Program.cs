@@ -10,6 +10,8 @@ namespace AspNetCoreWebService
 {
     public class Program
     {
+        private const string DEFAULT_LOG_NAME = "log.log";
+
         public static void Main(string[] args)
         {
             // using NuGet package: Microsoft.Extensions.Configuration.CommandLine
@@ -48,10 +50,15 @@ namespace AspNetCoreWebService
             host.Run();
         }
 
+        /// <summary>
+        /// Initiate an applicative log, based on command-line arguments
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
         private static ILogger InitializeLogger(IConfiguration config)
         {
             string logPath = config.GetValue<string>("logpath", Environment.CurrentDirectory);
-            string logName = config.GetValue<string>("logfilename", "log.log");
+            string logName = config.GetValue<string>("logfilename", DEFAULT_LOG_NAME);
             ILogger logger = new FileLogger();
             logger.Init(logPath, logName);
 

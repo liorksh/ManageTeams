@@ -24,14 +24,19 @@ namespace AspNetCoreWebService
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            //services.AddTransient<TeamMngtWS.Log.ILogger,FileLogger>();
-            
+        {            
             // Add framework services.
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="loggerFactory"></param>
+        /// <param name="args">this parameter is a permeation of the CLI arguments, currently not in use</param>
+        /// <param name="logger">this parameter is an injection of an ILogger object, currently not in use</param>
         public void Configure(IApplicationBuilder app, 
             IHostingEnvironment env, 
             ILoggerFactory loggerFactory,
@@ -44,8 +49,8 @@ namespace AspNetCoreWebService
             app.UseMvc();
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Service is configured Configure");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Service is configured");
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
     }
 }
